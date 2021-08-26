@@ -1,0 +1,48 @@
+NULL =
+
+wcc_dir = ~/prj/wcc/bin
+gcc = $(wcc_dir)/i686-elf-gcc
+asm = $(wcc_dir)/i686-elf-as
+nasm = /usr/bin/nasm
+inc = /home/wispy/prj/wlib/inc
+# For wlib
+wlib = /home/wispy/prj/wlib
+lsobj = $(shell find $(wlib)/obj/* -name '*.o' | tr '\n' ' ')
+crobj = $(shell $(wlib)/lib.sh $(gcc) $(wlib)/src $(wlib)/obj $(wlib)/inc)
+gcc_args = -ffreestanding -Ofast -Wall -Wextra -Wpedantic -I$(inc) -Iinc -nostdlib -nostdinc -DOS_WOS=1
+gcc_cmp = -mno-red-zone -mno-mmx -mno-sse -mno-sse2
+# -z max-page-size=0x1000 -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2
+dlib = bin
+
+_gcc:
+	$(gcc) src/kernel.c $(gcc_args) -dM -E -Lbin -l:wc.l < /dev/null > defines.txt
+	sort defines.txt > defines.txt
+wlib:
+	$(call crobj)
+	ar -rc $(dlib)/wc.l $(call lsobj)
+lib:
+	$(gcc) -c src/vga.c -o bin/vga.o $(gcc_args) $(gcc_cmp)
+	$(gcc) -c src/gdt.c -o bin/gdt.o $(gcc_args) $(gcc_cmp)
+	$(nasm) src/gdt.s -felf32 -o bin/gdtl.o
+boot:
+	$(nasm) src/boot.s -felf32 -o bin/boot.o
+kernel:
+	$(gcc) -c src/kernel.c -o bin/kernel.o $(gcc_args) $(gcc_cmp)
+build:
+	$(gcc) bin/boot.o bin/kernel.o bin/vga.o bin/gdt.o bin/gdtl.o -T linker.ld -o bin/wos.x $(gcc_args) -Lbin -l:wc.l -zmax-page-size=0x1000
+iso:
+	mkdir -p isodir/boot/grub
+	cp bin/wos.x isodir/boot/wos.x
+	cp grub.cfg isodir/boot/grub/grub.cfg
+	grub-mkrescue -o bin/wos.iso isodir
+all:
+	make wlib
+	make lib
+	make boot
+	make kernel
+	make build
+	make iso
+	make run
+run:
+#	qemu-system-x86_64 -kernel bin/wos.x
+	qemu-system-x86_64 -cdrom bin/wos.iso

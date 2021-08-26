@@ -1,0 +1,24 @@
+{
+	"files.associations": {
+		"vga.h": "c",
+		"*.tcc": "cpp",
+		"cstdio": "cpp",
+		"list": "cpp",
+		"string": "cpp",
+		"exception": "cpp",
+		"random": "cpp",
+		"istream": "cpp",
+		"new": "cpp",
+		"string_view": "cpp",
+		"type_traits": "cpp",
+		"algorithm": "cpp",
+		"types.h": "c",
+		"gdt.h": "c",
+		"array": "c",
+		"hash_map": "c",
+		"initializer_list": "c",
+		"utility": "c",
+		"idt.h": "c",
+		"keyboard.h": "c"
+	}
+}
