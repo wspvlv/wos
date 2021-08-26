@@ -18,10 +18,7 @@ isr_stub_table:
 %assign i i+1 
 %endrep
 
-;	Exception Handler
 extern xh
-xh:	
-	hlt
 
 isr_no_err_stub 0
 isr_no_err_stub 1

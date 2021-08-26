@@ -44,18 +44,19 @@
 	 * \struct	IDT
 	 * 
 	 */
-	typedef IDTE IDT[256];
+	typedef IDTE __attribute__((aligned(0x1000))) IDT[256];
 /* 	typedef struct __attribute__((__packed__)) IDT {
 		IDTE irq[256];
 	} IDT; */
 #endif
 
 #ifndef REGION_DECLARATIONS
-extern IDT idt;
+extern __attribute__((aligned(0x1000))) IDT idt;
 extern IDTD idtd;
+extern u32 isr_stub_table[];
 extern void idteso();	/* IDT Entry Set Offset */
 extern void idtl();
-extern __attribute__((noreturn)) void xh();	/* Exception handler */
+__attribute__((noreturn)) extern void xh();	/* Exception handler */
 #endif
 
 #endif
