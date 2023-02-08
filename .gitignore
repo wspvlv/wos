@@ -1,6 +1,6 @@
 obj/
 iso/
 bin/
-.*/
+.vscode/
 *.o
 wos.iso
